@@ -5,6 +5,19 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from dotenv import load_dotenv
 import yt_dlp
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import threading
+
+
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+
+def run_health_check():
+    server = HTTPServer(('0.0.0.0', 8000), HealthCheckHandler)
+    server.serve_forever()
 
 # Load environment variables
 load_dotenv()
@@ -142,6 +155,10 @@ async def download_and_send_video(update: Update, context: ContextTypes.DEFAULT_
 
 def main():
     """Start the bot"""
+    
+    health_thread = threading.Thread(target=run_health_check, daemon=True)
+    health_thread.start()
+
     application = Application.builder().token(TOKEN).build()
 
     # Add handlers
