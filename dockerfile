@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Run your bot
-CMD ["python", "your_bot_file.py"]
+CMD ["python", "AnyDown.py"]
